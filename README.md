@@ -1,8 +1,8 @@
 # grunt-pepper
 
-> puts pepper to my coffe
+> puts pepper to my coffee
 
-A little tool that parses my coffescript files before they get translated to javascript.
+A little tool that parses my coffeescript files before they get translated to javascript.
 
 It replaces log calls to include the file-path as well as the line-number as additional arguments.
 
@@ -14,7 +14,7 @@ log "hello", "world!"
 
 # ... with this one:
 
-_log 'drink/file.coffee', 3, "hello", "world"
+_log 'drink/some.coffee', 3, "hello", "world"
 
 ```
 
