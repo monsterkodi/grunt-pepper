@@ -1,0 +1,33 @@
+{
+  "name": "grunt-pepper",
+  "description": "puts pepper to my coffee",
+  "version": "0.1.0",
+  "homepage": "https://github.com/monsterkodi/grunt-pepper",
+  "author": {
+    "name": "monsterkodi",
+    "email": "monsterkodi@gmx.net",
+    "url": "http://monsterkodi.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monsterkodi/grunt-pepper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/monsterkodi/grunt-pepper/issues"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.5"
+  },
+  "dependencies": {
+    "ansi": "^0.3.0",
+  }
+  "keywords": [
+    "gruntplugin",
+    "coffeescript",
+    "template",
+    "logging"
+  ]
+}
