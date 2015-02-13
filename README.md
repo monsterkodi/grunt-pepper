@@ -35,7 +35,7 @@ so please use at your own risk!
 
 ## Getting Started
 
-install the grunt plugin:
+Install the grunt plugin:
 
 ```shell
 npm install grunt-pepper --save-dev
@@ -44,22 +44,26 @@ npm install grunt-pepper --save-dev
 Gruntfile.coffee example:
 
 ```coffee
-grunt.initConfig
+module.exports = (grunt) ->
+
+  grunt.initConfig
 
     pepper:
-        options:
-            dryrun:   false      # if true, no files are written, just prints what would be done
-            verbose:  false      # if true, the parse result is printed to stdout
-            quiet:    false      # if true, almost no information is printed
-            outdir:   '.pepper'  # directory where the parse results are written to
-            type:     '.coffee'  # suffix of the parse result files
-            template: '::'       # replaces ::file.json:key:: with property key of object in file.json. set to false to disable templating
-            log:      'log'      # original log function that gets replaced
-            fileLog:  '_log'     # replaced log function that gets peppered with two additional (file-path and line-number) arguments
-
+      options:
+        dryrun:   false      # if true, no files are written,
+                             # just prints what would be done
+        verbose:  false      # if true, the parse result is printed to stdout
+        quiet:    false      # if true, almost no information is printed
+        outdir:   '.pepper'  # directory where the parse results are written to
+        type:     '.coffee'  # suffix of the parse result files
+        template: '::'       # replaces ::file.json:key:: with property key from file.json.
+                             # set to false to disable templating
+        log:      'log'      # original log function that gets replaced
+        fileLog:  '_log'     # replaced log function that has file-path and line-number
+                             # as two additional arguments
     task:
-        files:
-            'spiced': [ file(s) ] # will parse all file(s) and write the result to file '.pepper/spiced.coffee'
+      files:
+        'spiced': [ file(s) ] # will parse all file(s) and write the result to file '.pepper/spiced.coffee'
 
-    grunt.loadNpmTasks 'grunt-pepper'
+  grunt.loadNpmTasks 'grunt-pepper'
 ```
