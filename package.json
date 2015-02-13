@@ -18,12 +18,9 @@
   "engines": {
     "node": ">= 0.8.0"
   },
-  "peerDependencies": {
-    "grunt": "~0.4.5"
-  },
   "dependencies": {
-    "ansi": "^0.3.0",
-  }
+    "ansi": "^0.3.0"
+  },
   "keywords": [
     "gruntplugin",
     "coffeescript",
