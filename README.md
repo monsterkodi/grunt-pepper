@@ -33,15 +33,12 @@ It can also replace special markers with values from a json file:
 I am pretty new to the coffee-script and grunt world,
 so please use at your own risk!
 
-## Getting Started
-
-Install the grunt plugin:
+## Installation
 
 ```shell
 npm install grunt-pepper --save-dev
 ```
-
-Gruntfile.coffee example:
+## Gruntfile.coffee
 
 ```coffee
 module.exports = (grunt) ->
@@ -69,3 +66,5 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-pepper'
 ```
+
+Have a look at the [Gruntfile](https://github.com/monsterkodi/knix/blob/master/Gruntfile.coffee) of my other [pet project](https://github.com/monsterkodi/knix) if you need another example
