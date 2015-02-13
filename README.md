@@ -60,11 +60,12 @@ module.exports = (grunt) ->
                              # property key from object in file.json
                              # set to false to disable templating
         log:      'log'      # original log function that gets replaced
-        fileLog:  '_log'     # replaced log function that has filepath and 
+        fileLog:  '_log'     # replaced log function that has filepath and
                              # line number as two additional arguments
     task:
       files:
-        'spiced': [ file(s) ] # will parse all file(s) and write the result to file '.pepper/spiced.coffee'
+        'spiced': [ file(s) ] # will parse all file(s) and write the result
+                              # to file '.pepper/spiced.coffee'
 
   grunt.loadNpmTasks 'grunt-pepper'
 ```
