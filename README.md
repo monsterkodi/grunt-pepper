@@ -8,7 +8,7 @@ It replaces log calls to include the file-path as well as the line-number as add
 
 For example, in a file at *./drink/some.coffee* it would ...
 ```coffee
-# ... replace following log:
+# ... replace the following log:
 
 log "hello", "world!"
 
@@ -57,7 +57,7 @@ module.exports = (grunt) ->
                              # property key from object in file.json
                              # set to false to disable templating
         log:      'log'      # original log function that gets replaced
-        fileLog:  '_log'     # replaced log function that has filepath and
+        fileLog:  '_log'     # replacement log function that has filepath and
                              # line number as two additional arguments
     task:
       files:
