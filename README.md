@@ -56,11 +56,12 @@ module.exports = (grunt) ->
         quiet:    false      # if true, almost no information is printed
         outdir:   '.pepper'  # directory where the parse results are written to
         type:     '.coffee'  # suffix of the parse result files
-        template: '::'       # replaces ::file.json:key:: with property key from file.json.
+        template: '::'       # replaces ::file.json:key:: with value of
+                             # property key from object in file.json
                              # set to false to disable templating
         log:      'log'      # original log function that gets replaced
-        fileLog:  '_log'     # replaced log function that has file-path and line-number
-                             # as two additional arguments
+        fileLog:  '_log'     # replaced log function that has filepath and 
+                             # line number as two additional arguments
     task:
       files:
         'spiced': [ file(s) ] # will parse all file(s) and write the result to file '.pepper/spiced.coffee'
