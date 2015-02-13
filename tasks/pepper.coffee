@@ -22,21 +22,21 @@ parseFile = (grunt, options, f) ->
     for li in [0...lines.length]
         line = lines[li]
 
-        logpat = new RegExp('(^[^#]*\\s)(' + options.log + ')(\\s.*$)')
-        if m = line.match(logpat)
-            lines[li] = line.replace logpat, "$1" + options.fileLog + " '"+f+"', "+(li+1)+", $3"
+        regexp = new RegExp('(^[^#]*\\s)(' + options.log + ')(\\s.*$)')
+        if m = line.match(regexp)
+            lines[li] = line.replace regexp, "$1" + options.fileLog + " '"+f+"', "+(li+1)+", $3"
             if not options.quiet
                 cursor.blue().write('.')
 
         if options.template
-            logpat = new RegExp('^[^#]*' + options.template + '(.+)' + options.template + '.*$')
-            if m = line.match(logpat)
-                [jsonFile, key] = m[1].split ':'
+            regexp = new RegExp('(^[^#]*)(' + options.template + ')(.+)(' + options.template + ')(.*$)')
+            if m = line.match(regexp)
+                [jsonFile, key] = m[3].split ':'
                 json = fs.readFileSync jsonFile,
                           encoding: 'utf8'
                 jsonObj = JSON.parse(json)
                 if jsonObj?[key]?
-                    lines[li] = line.replace /(^[^#]*)(::.+::)(.*$)/, "$1"+jsonObj[key]+"$3"
+                    lines[li] = line.replace regexp, "$1"+jsonObj[key]+"$5"
                     if not options.quiet
                         cursor.blue().write(':')
 
