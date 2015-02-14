@@ -12,21 +12,41 @@ parseFile = (grunt, options, f) ->
 
     s = grunt.file.read f
     lines = s.split '\n'
-    newlines = []
 
     if not options.quiet
-      cursor.red()   if     options.dryrun
-      cursor.green() if not options.dryrun
-      cursor.write('       ' + f + ' ')
+        cursor.hex('#444444')
+        cursor.write('       ' + f + ' ').reset()
+
+    info = { file: f }
 
     for li in [0...lines.length]
+        info.line = li+1
         line = lines[li]
 
-        regexp = new RegExp('(^[^#]*\\s)(' + options.log + ')(\\s.*$)')
-        if m = line.match(regexp)
-            lines[li] = line.replace regexp, "$1" + options.fileLog + " '"+f+"', "+(li+1)+", $3"
-            if not options.quiet
-                cursor.blue().write('.')
+        if options.tag
+            regexp = /(^\s*class\s+)(\w+)(\s?.*$)/
+            if m = line.match(regexp)
+                info.class = m[2]
+                if not options.quiet
+                    cursor.green()
+                    cursor.write('\n        '+info.class+' ')
+
+            if m = line.match(/(\@)?(\w+)\s*\:\s*(\([^)]*\))?\s*[=-]\>/)
+                info.args = ( a.trim() for a in m[3].slice(1,-1).split(',') ) if m[3]
+                info.method = m[2]
+                info.type = m[1] or '.'
+                if options.verbose
+                    cursor.hex(info.type == '@' and '#333333' or '#777777')
+                    cursor.write('\n             '+info.type+' '+info.method+' '+info.args)
+
+        if options.log
+            regexp = new RegExp('(^[^#]*\\s)(' + options.log + ')(\\s.*$)')
+            if m = line.match(regexp)
+
+                if options.infoLog
+                    lines[li] = line.replace regexp, "$1" + options.infoLog + " " + JSON.stringify(info) + ", $3"
+                    if not options.quiet
+                        cursor.blue().write('.')
 
         if options.template
             regexp = new RegExp('(^[^#]*)(' + options.template + ')(.+)(' + options.template + ')(.*$)')
@@ -56,7 +76,9 @@ module.exports = (grunt) ->
               type:     '.coffee'     # suffix of the parse result files
               template: '::'          # replaces ::file.json:key:: with property key of object in file.json. set to false to disable templating
               log:      'log'         # original log function that gets replaced
-              fileLog:  '_log'        # replaced log function that gets peppered with two additional (file-path and line-number) arguments
+              infoLog:  '_log'        # replacement log function that gets peppered with one additional argument
+                                      #       object with keys: file, line, method, type, args
+              tag:      '_tag'
 
     for file in @files
 

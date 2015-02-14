@@ -1,7 +1,7 @@
 {
   "name": "grunt-pepper",
   "description": "puts pepper to my coffee",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/monsterkodi/grunt-pepper",
   "author": {
     "name": "monsterkodi",

@@ -2,19 +2,22 @@
 
 > puts pepper to my coffee
 
-A little tool that parses my coffeescript files before they get translated to javascript.
+A little tool that parses my coffee-script files before they get translated to javascript.
 
-It replaces log calls to include the file-path as well as the line-number as additional arguments.
+It replaces log function calls with calls to an alternative log function that receives an
+info object as its first argument. The info object contains the file-path, line-number,
+class- and method-name of the place where the log occurred.
 
-For example, in a file at *./drink/some.coffee* it would ...
+For example, in a file *./drink/some.coffee* ...
 ```coffee
-# ... replace the following log:
+class Hello
 
-log "hello", "world!"
+  sayHello: =>
+    # ... it would replace the following log:
+    log "hello", "world!"
 
-# ... with this one:
-
-_log 'drink/some.coffee', 3, "hello", "world"
+    # ... with this one:
+    _log {file: 'drink/some.coffee', line: 5, class: 'Hello', method: 'sayHello'}, "hello", "world"
 
 ```
 
@@ -57,8 +60,8 @@ module.exports = (grunt) ->
                              # property key from object in file.json
                              # set to false to disable templating
         log:      'log'      # original log function that gets replaced
-        fileLog:  '_log'     # replacement log function that has filepath and
-                             # line number as two additional arguments
+        infoLog:  '_log'     # replacement log function that has info object
+                             # as additional first argument
     task:
       files:
         'spiced': [ file(s) ] # will parse all file(s) and write the result
