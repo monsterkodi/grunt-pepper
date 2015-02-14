@@ -17,7 +17,8 @@ class Hello
     log "hello", "world!"
 
     # ... with this one:
-    _log {file: 'drink/some.coffee', line: 5, class: 'Hello', method: 'sayHello'}, "hello", "world"
+    _log {file: 'drink/some.coffee', line: 5, class: 'Hello', method: 'sayHello'},
+          "hello", "world"
 
 ```
 
@@ -70,4 +71,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-pepper'
 ```
 
-Have a look at the [Gruntfile](https://github.com/monsterkodi/knix/blob/master/Gruntfile.coffee) of my other [pet project](https://github.com/monsterkodi/knix) if you need another example
+Have a look at the [Gruntfile](https://github.com/monsterkodi/knix/blob/master/Gruntfile.coffee) of my other [pet project](https://github.com/monsterkodi/knix) if you need another example.
