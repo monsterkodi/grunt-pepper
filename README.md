@@ -17,8 +17,8 @@ class Hello
     log "hello", "world!"
 
     # ... with this one:
-    _log {file: 'drink/some.coffee', line: 5, class: 'Hello', method: 'sayHello'},
-          "hello", "world"
+    log {file: 'drink/some.coffee', line: 5, class: 'Hello', method: 'sayHello'},
+        "hello", "world"
 ```
 
 It can also replace special markers with values from a json file:
