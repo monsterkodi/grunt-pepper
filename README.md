@@ -4,9 +4,9 @@
 
 A little tool that parses my coffee-script files before they get translated to javascript.
 
-It replaces log function calls with calls to an alternative log function that receives an
-info object as its first argument. The info object contains the file-path, line-number,
-class- and method-name of the place where the log occurred.
+It replaces log function calls with alternative calls that receive an info object as its first argument.
+
+The info object contains the file-path and line-number as well as class-, method- and agrument-names of the place where the log occurred.
 
 For example, in a file *./drink/some.coffee* ...
 ```coffee
@@ -19,7 +19,6 @@ class Hello
     # ... with this one:
     _log {file: 'drink/some.coffee', line: 5, class: 'Hello', method: 'sayHello'},
           "hello", "world"
-
 ```
 
 It can also replace special markers with values from a json file:
@@ -60,9 +59,18 @@ module.exports = (grunt) ->
         template: '::'       # replaces ::file.json:key:: with value of
                              # property key from object in file.json
                              # set to false to disable templating
-        log:      'log'      # original log function that gets replaced
-        infoLog:  '_log'     # replacement log function that has info object
-                             # as additional first argument
+        pepper: ['console.log']
+                # function calls that get peppered
+                #
+                # if specified as a map:
+                #       key:   original function name that gets replaced
+                #       value: replacement function that gets called instead
+                #
+                # if specified as a list:
+                #       preserves the original function names
+                #
+                #  the replacement function receives one additional first argument:
+                #       an object with keys: file, line, method, type, args
     task:
       files:
         'spiced': [ file(s) ] # will parse all file(s) and write the result
