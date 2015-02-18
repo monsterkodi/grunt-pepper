@@ -130,14 +130,11 @@ module.exports = (grunt) ->
                   quiet:    false         # if true, almost no information is printed
                   refresh:  false         # if true, all ascii headers will be regenerated
                                           # if false, only empty ascii headers are updated
-                  salt:     [asciiHeader]
 
         for file in @files
-
-            files = (f for f in file.src when grunt.file.exists(f))
-            for f in files
-                for salt in options.salt
-                    salt grunt, options, f
+            for f in (f for f in file.src when grunt.file.exists(f))
+                if file.dest == 'asciiHeader'
+                    asciiHeader grunt, options, f
 
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
@@ -168,7 +165,6 @@ asciiHeader = (grunt, options, f) ->
                     salted = _.flatten([lines[0], ascii, lines.splice(li)]).join('\n')
                     if not options.dryrun
                         grunt.file.write f, salted
-                    # console.log result
                         
 #__________________________________________________________________________________________________________ ascii font
 

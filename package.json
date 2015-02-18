@@ -1,6 +1,6 @@
 {
   "name": "grunt-pepper",
-  "description": "puts pepper to my coffee",
+  "description": "A tool that modifies coffee-script files: add information objects to log function calls, insert data from json files and generate ascii-art headers.",
   "version": "0.3.1",
   "homepage": "https://github.com/monsterkodi/grunt-pepper",
   "author": {

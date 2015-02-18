@@ -80,3 +80,43 @@ module.exports = (grunt) ->
 ```
 
 Have a look at the [Gruntfile](https://github.com/monsterkodi/knix/blob/master/Gruntfile.coffee) of my other [pet project](https://github.com/monsterkodi/knix) if you need another example.
+
+# ... and salt ...
+
+In addition to the pepper task, there is another task which is called *salt*.
+
+It can add an ascii header to files which start with an empty block comment.
+
+For example, in a file *salt.coffee* it would ...
+
+```coffee
+###
+###
+
+# ... replace the above comment lines with the following header:
+
+###
+
+ 0000000   0000000   000      000000000
+000       000   000  000         000   
+0000000   000000000  000         000   
+     000  000   000  000         000   
+0000000   000   000  0000000     000   
+
+###
+```
+
+## Gruntfile.coffee
+
+```coffee
+    salt:
+        options:
+            dryrun:        false
+            quiet:         false
+            verbose:       true
+            refresh:       false # if true, it will replace all ascii headers, 
+                                 # otherwise only empty block comments are filled
+        knix:
+            files:
+                'asciiHeader': ['./coffee/**/*.coffee']
+```
