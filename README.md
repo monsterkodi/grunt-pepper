@@ -106,7 +106,7 @@ For example, in a file *salt.coffee* it would ...
 ###
 ```
 
-I think hose headers give me a nicer looking minimap:
+I think these headers give me a nicer looking minimap:
 
 ![minimap](https://raw.githubusercontent.com/monsterkodi/grunt-pepper/master/salt.png)
 
