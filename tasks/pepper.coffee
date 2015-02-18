@@ -5,11 +5,14 @@
 ansi     = require 'ansi'
 cursor   = ansi process.stdout
 fs       = require 'fs'
+path     = require 'path'
 _        = require 'lodash'
 
 'use strict';
 
-parseFile = (grunt, options, f) ->
+#__________________________________________________________________________________________________________ pepper file
+
+pepperFile = (grunt, options, f) ->
 
     s = grunt.file.read f
     lines = s.split '\n'
@@ -69,9 +72,11 @@ parseFile = (grunt, options, f) ->
         cursor.write('\n').reset()
     lines.join('\n')
 
+#__________________________________________________________________________________________________________ grunt tasks
+
 module.exports = (grunt) ->
 
-    grunt.registerMultiTask 'pepper', 'puts pepper to my coffe', () ->
+    grunt.registerMultiTask 'pepper', 'puts pepper to my coffee', () ->
 
         options = @options
                   dryrun:   false         # if true, no files are written,
@@ -102,7 +107,7 @@ module.exports = (grunt) ->
                   .reset()
 
             files = (f for f in file.src when grunt.file.exists(f))
-            peppered = ( parseFile(grunt, options, f) for f in files ).join('\n')
+            peppered = ( pepperFile(grunt, options, f) for f in files ).join('\n')
 
             if options.verbose
                 cursor.reset()
@@ -114,3 +119,215 @@ module.exports = (grunt) ->
 
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
+            
+    #_____________________________________________________________________________________
+
+    grunt.registerMultiTask 'salt', 'puts salt to my coffee', () ->
+
+        options = @options
+                  dryrun:   false         # if true, no files are written,
+                  verbose:  false         # if true, more information is printed to stdout
+                  quiet:    false         # if true, almost no information is printed
+                  refresh:  false         # if true, all ascii headers will be regenerated
+                                          # if false, only empty ascii headers are updated
+                  salt:     [asciiHeader]
+
+        for file in @files
+
+            files = (f for f in file.src when grunt.file.exists(f))
+            for f in files
+                for salt in options.salt
+                    salt grunt, options, f
+
+        if options.dryrun
+            cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
+
+#__________________________________________________________________________________________________________ ascii header
+
+asciiText = (s) ->
+    cs = (chars[c.charCodeAt(0) - 97].split('\n') for c in s)
+    zs = _.zip.apply(null, cs)
+    js = _.map(zs, (j) -> j.join('  '))
+    "\n"+js.join('\n')+"\n"
+
+asciiHeader = (grunt, options, f) ->
+
+    s = grunt.file.read f
+    lines = s.split '\n'
+
+    if _.startsWith(lines[0], '###')
+        for li in [1...lines.length]
+            if _.startsWith(lines[li], '###')
+                if li == 1 or options.refresh
+                    if not options.quiet
+                        cursor.hex('#444444').write('creating ascii header for file ' + String(f)).write('\n')
+                    base = path.basename f, path.extname(f)
+                    ascii = asciiText base
+                    if options.verbose
+                        cursor.hex('#ff0000').write(ascii).write('\n')
+                    salted = _.flatten([lines[0], ascii, lines.splice(li)]).join('\n')
+                    if not options.dryrun
+                        grunt.file.write f, salted
+                    # console.log result
+                        
+#__________________________________________________________________________________________________________ ascii font
+
+chars = [ \
+"""
+\ 0000000 
+000   000
+000000000
+000   000
+000   000
+""","""
+0000000  
+000   000
+0000000  
+000   000
+0000000  
+""","""
+\ 0000000
+000     
+000     
+000     
+ 0000000
+""","""
+0000000  
+000   000
+000   000
+000   000
+0000000  
+""","""
+00000000
+000     
+0000000 
+000     
+00000000
+""","""
+00000000
+000     
+000000  
+000     
+000     
+""","""
+\ 0000000 
+000      
+000  0000
+000   000
+ 0000000 
+""","""
+000   000
+000   000
+000000000
+000   000
+000   000
+""","""
+000
+000
+000
+000
+000
+""","""
+\      000
+      000
+      000
+000   000
+ 0000000 
+""","""
+000   000
+000  000 
+0000000  
+000  000 
+000   000
+""","""
+000    
+000    
+000    
+000    
+0000000
+""","""
+00     00
+000   000
+000000000
+000 0 000
+000   000
+""","""
+000   000
+0000  000
+000 0 000
+000  0000
+000   000
+""","""
+\ 0000000 
+000   000
+000   000
+000   000
+ 0000000 
+""","""
+00000000 
+000   000
+00000000 
+000      
+000      
+""","""
+\ 0000000
+000   000
+000 00 00
+000 0000 
+ 00000 00
+""","""
+00000000 
+000   000
+0000000  
+000   000
+000   000
+""","""
+\ 0000000
+000     
+0000000 
+     000
+0000000 
+""","""
+000000000
+   000   
+   000   
+   000   
+   000   
+""","""
+000   000
+000   000
+000   000
+000   000
+ 0000000 
+""","""
+000   000
+000   000
+ 000 000 
+   000   
+    0    
+""","""
+000   000
+000 0 000
+000000000
+000   000
+00     00
+""","""
+000   000
+ 000 000 
+  00000  
+ 000 000 
+000   000
+""","""
+000   000
+ 000 000 
+  00000  
+   000   
+   000   
+""","""
+0000000
+   000 
+  000  
+ 000   
+0000000
+"""
+]
