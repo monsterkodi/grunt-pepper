@@ -69,7 +69,7 @@ module.exports = (grunt) ->
                 # if specified as a list:
                 #       preserves the original function names
                 #
-                #  the replacement function receives one additional first argument:
+                #  the replacement function receives one additional 1st argument:
                 #       an object with keys: file, line, method, type, args
     task:
       files:
@@ -119,7 +119,7 @@ I think these headers give me a nicer looking minimap:
             quiet:         false
             verbose:       true
             refresh:       false # if true, it will replace all ascii headers, 
-                                 # otherwise only empty block comments are filled
+                                 # false: only empty block comments are filled
         knix:
             files:
                 'asciiHeader': ['./coffee/**/*.coffee']
