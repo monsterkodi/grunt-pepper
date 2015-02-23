@@ -36,7 +36,7 @@ pepperFile = (grunt, options, f) ->
                     cursor.green()
                     cursor.write('\n        '+info.class+' ')
 
-            if m = line.match(/(\@)?(\w+)\s*\:\s*(\([^)]*\))?\s*[=-]\>/)
+            if m = line.match(/^\s{2,6}(\@)?(\w+)\s*\:\s*(\([^)]*\))?\s*[=-]\>/)
                 info.args = ( a.trim() for a in m[3].slice(1,-1).split(',') ) if m[3]
                 info.method = m[2]
                 info.type = m[1] or '.'
