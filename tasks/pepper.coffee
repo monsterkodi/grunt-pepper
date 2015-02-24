@@ -21,14 +21,14 @@ pepperFile = (grunt, options, f) ->
         cursor.hex('#444444')
         cursor.write('       ' + f + ' ').reset()
 
-    info = { file: f }
-
+    info = { file: f, class: path.basename f, '.coffee' }
+    
     for li in [0...lines.length]
         info.line = li+1
         line = lines[li]
 
         if options.pepper
-
+            
             regexp = /(^\s*class\s+)(\w+)(\s?.*$)/
             if m = line.match(regexp)
                 info.class = m[2]
@@ -36,7 +36,7 @@ pepperFile = (grunt, options, f) ->
                     cursor.green()
                     cursor.write('\n        '+info.class+' ')
 
-            if m = line.match(/^\s{2,6}(\@)?(\w+)\s*\:\s*(\([^)]*\))?\s*[=-]\>/)
+            if m = line.match(/^\s{0,6}(\@)?([\_\.\w]+)\s*[\:\=]\s*(\([^)]*\))?\s*[=-]\>/)
                 info.args = ( a.trim() for a in m[3].slice(1,-1).split(',') ) if m[3]
                 info.method = m[2]
                 info.type = m[1] or '.'
@@ -54,7 +54,10 @@ pepperFile = (grunt, options, f) ->
                 if m = line.match(regexp)
                     lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
                     if not options.quiet
-                        cursor.blue().write('.')
+                        if options.verbose
+                            cursor.blue().write('\n').write(lines[li])
+                        else
+                            cursor.blue().write('.')
 
         if options.template
             regexp = new RegExp('(^[^#]*)(' + options.template + ')(.+)(' + options.template + ')(.*$)')
@@ -80,7 +83,8 @@ module.exports = (grunt) ->
 
         options = @options
                   dryrun:   false         # if true, no files are written,
-                  verbose:  false         # if true, the parse result is printed to stdout
+                  verbose:  false         # if true, the matches are printed to stdout
+                  print:    false         # if true, the parse result is printed to stdout
                   quiet:    false         # if true, almost no information is printed
                   outdir:   '.pepper'     # directory where the parse results are written to
                   type:     '.coffee'     # suffix of the parse result files
@@ -109,7 +113,7 @@ module.exports = (grunt) ->
             files = (f for f in file.src when grunt.file.exists(f))
             peppered = ( pepperFile(grunt, options, f) for f in files ).join('\n')
 
-            if options.verbose
+            if options.print
                 cursor.reset()
                 cursor.write(peppered).write('\n')
 
