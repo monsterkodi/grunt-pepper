@@ -118,9 +118,26 @@ I think these headers give me a nicer looking minimap:
             dryrun:        false
             quiet:         false
             verbose:       true
-            refresh:       false # if true, it will replace all ascii headers, 
-                                 # false: only empty block comments are filled
-        knix:
+        headers:
+            options:
+                headerStart : "###" # filename will be put between this ...
+                headerEnd   : "###" # ... and this marker                
+                refresh     : false # if true, it will replace all ascii headers, 
+                                    # false: only empty block comments are filled
             files:
                 'asciiHeader': ['./coffee/**/*.coffee']
+                
+        # 'asciiText' mode replaces text with ascii art text anywhere in the files
+        #             this is what I use to generate text in my stylus files:
+        style:
+            options:
+            textMarker  : "//!!" #   text following this one will be transformed
+            textPrefix  : "/*"   #   this is put before the replacing lines
+            textFill    : "* "   #   each replacing line starts with these characters
+            textPostfix : "*/"   #   this is put after the replacing lines
+            files:
+                'asciiText': ['./style/*.styl']
 ```
+
+This stuff works for me, but I won't guarantee that it works for you as well. 
+Therefore: don't forget to backup your files before you try it out!

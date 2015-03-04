@@ -128,47 +128,84 @@ module.exports = (grunt) ->
 
     grunt.registerMultiTask 'salt', 'puts salt to my coffee', () ->
 
-        options = @options
-                  dryrun:   false         # if true, no files are written,
-                  verbose:  false         # if true, more information is printed to stdout
-                  quiet:    false         # if true, almost no information is printed
-                  refresh:  false         # if true, all ascii headers will be regenerated
-                                          # if false, only empty ascii headers are updated
+        options = @options            #
+                                      # 'asciiHeader' options:
+                                      #
+                  headerStart : "###" #   filename will be put between this ...
+                  headerEnd   : "###" #   ... and this marker
+                  refresh     : false #   if true: all ascii headers will be regenerated
+                                      #   if false: only empty ascii headers are updated
+                                      #
+                                      # 'asciiText' options:
+                                      #
+                  textMarker  : "#!!" #   text following this one will be transformed
+                  textPrefix  : "###" #   this is put before the replacing lines
+                  textFill    : ""    #   each replacing line starts with these charaters
+                  textPostfix : "###" #   this is put after the replacing lines
+                  dryrun      : false # if true: no files are written,
+                  verbose     : false # if true: more information is printed to stdout
+                  quiet       : false # if true: almost no information is printed
 
         for file in @files
             for f in (f for f in file.src when grunt.file.exists(f))
                 if file.dest == 'asciiHeader'
                     asciiHeader grunt, options, f
+                else if file.dest == 'asciiText'
+                    asciiText grunt, options, f
 
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
 
 #__________________________________________________________________________________________________________ ascii header
 
-asciiText = (s) ->
-    cs = (chars[c.charCodeAt(0) - 97].split('\n') for c in s)
-    zs = _.zip.apply(null, cs)
-    js = _.map(zs, (j) -> j.join('  '))
-    "\n"+js.join('\n')+"\n"
+asciiLines = (s) ->
+        cs = (chars[c.charCodeAt(0)-97].split('\n') for c in s when 97 <= c.charCodeAt(0) < 97+26)
+        zs = _.zip.apply(null, cs)
+        _.map(zs, (j) -> j.join('  '))
+    
+asciiJoin = (l) ->
+    "\n"+l.join('\n')+"\n"
 
 asciiHeader = (grunt, options, f) ->
 
     s = grunt.file.read f
     lines = s.split '\n'
 
-    if _.startsWith(lines[0], '###')
+    if _.startsWith(lines[0], options.headerStart)
         for li in [1...lines.length]
-            if _.startsWith(lines[li], '###')
+            if _.startsWith(lines[li], options.headerEnd)
                 if li == 1 or options.refresh
                     if not options.quiet
                         cursor.hex('#444444').write('creating ascii header for file ' + String(f)).write('\n')
                     base = path.basename f, path.extname(f)
-                    ascii = asciiText base
+                    ascii = asciiJoin asciiLines base
                     if options.verbose
                         cursor.hex('#ff0000').write(ascii).write('\n')
                     salted = _.flatten([lines[0], ascii, lines.splice(li)]).join('\n')
                     if not options.dryrun
                         grunt.file.write f, salted
+    
+asciiText = (grunt, options, f) ->
+    
+    s = grunt.file.read f
+    lines = s.split '\n'
+    salted = []
+    r = new RegExp('^(\\s*)(' + options.textMarker + ")", 'i')
+    for li in [0...lines.length]
+        if m = lines[li].match(r)
+            if not options.quiet
+                cursor.hex('#444444').write('creating ascii text in line ' + String(li) + ' in file ' + String(f)).write('\n')
+            lns = asciiLines(lines[li].slice(m[1].length+options.textMarker.length))
+            if options.verbose
+                cursor.hex('#ff0000').write(asciiJoin lns).write('\n')
+            salted.push m[1] + options.textPrefix
+            for l in lns
+                salted.push m[1] + options.textFill + l
+            salted.push m[1] + options.textPostfix
+        else
+            salted.push lines[li]
+    if not options.dryrun
+        grunt.file.write f, salted.join('\n')
                         
 #__________________________________________________________________________________________________________ ascii font
 
