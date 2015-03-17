@@ -141,3 +141,6 @@ I think these headers give me a nicer looking minimap:
 
 This stuff works for me, but I won't guarantee that it works for you as well. 
 Therefore: don't forget to backup your files before you try it out!
+
+[npm](https://www.npmjs.com/package/grunt-pepper)
+[grunt](http://gruntjs.com/)
