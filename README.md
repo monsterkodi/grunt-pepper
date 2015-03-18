@@ -1,8 +1,6 @@
 # grunt-pepper
 
-> puts pepper to my coffee
-
-A little tool that parses my coffee-script files before they get translated to javascript.
+... is a little tool that parses my coffee-script files before they get translated to javascript.
 
 It replaces log function calls with alternative calls that receive an info object as its first argument.
 

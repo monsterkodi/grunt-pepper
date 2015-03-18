@@ -1,7 +1,14 @@
-#
-# grunt-pepper
-# https://github.com/monsterkodi/grunt-pepper
-#
+###
+
+00000000   00000000  00000000   00000000   00000000  00000000 
+000   000  000       000   000  000   000  000       000   000
+00000000   0000000   00000000   00000000   0000000   0000000  
+000        000       000        000        000       000   000
+000        00000000  000        000        00000000  000   000
+
+### 
+## https://github.com/monsterkodi/grunt-pepper
+
 ansi     = require 'ansi'
 cursor   = ansi process.stdout
 fs       = require 'fs'
@@ -10,7 +17,13 @@ _        = require 'lodash'
 
 'use strict';
 
-#__________________________________________________________________________________________________________ pepper file
+###
+00000000  000  000      00000000
+000       000  000      000     
+000000    000  000      0000000 
+000       000  000      000     
+000       000  0000000  00000000
+###
 
 pepperFile = (grunt, options, f) ->
 
@@ -27,7 +40,7 @@ pepperFile = (grunt, options, f) ->
         info.line = li+1
         line = lines[li]
 
-        if options.pepper
+        if options.pepper or options.paprika
             
             regexp = /(^\s*class\s+)(\w+)(\s?.*$)/
             if m = line.match(regexp)
@@ -44,20 +57,51 @@ pepperFile = (grunt, options, f) ->
                     cursor.hex(info.type == '@' and '#333333' or '#777777')
                     cursor.write('\n             '+info.type+' '+info.method+' '+info.args)
 
-            if Array.isArray(options.pepper)
-                map = _.zipObject options.pepper, options.pepper
-            else
-                map = options.pepper
+            if options.pepper
+                if Array.isArray(options.pepper)
+                    map = _.zipObject options.pepper, options.pepper
+                else
+                    map = options.pepper
 
-            for key of map
-                regexp = new RegExp('(^[^#]*\\s)(' + key + ')(\\s.*$)')
-                if m = line.match(regexp)
-                    lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
-                    if not options.quiet
-                        if options.verbose
-                            cursor.blue().write('\n').write(lines[li])
-                        else
-                            cursor.blue().write('.')
+                for key of map
+                    regexp = new RegExp('(^[^#]*\\s)(' + key + ')(\\s.*$)')
+                    if m = line.match(regexp)
+                        lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
+                        if not options.quiet
+                            if options.verbose
+                                cursor.blue().write('\n').write(lines[li])
+                            else
+                                cursor.blue().write('.')
+
+            if options.paprika
+                if Array.isArray(options.paprika)
+                    map = _.zipObject options.paprika, options.paprika
+                else
+                    map = options.paprika
+
+                for key of map
+                    regexp = new RegExp('(^[^#]*\\s)(' + key + ')(\\s.*$)')
+                    if m = line.match(regexp)
+                        lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
+                        arglist = (_.trim(a) for a in m[3].split(','))
+                        cursor.green().write(String(arglist)).write('\n')
+                        argreg = new RegExp('[\w\.]*')
+                        for i in [arglist.length-1..0]
+                            arg = arglist[i]
+                            # cursor.green().write('arg: "'+String(arg)+'"')
+                            if arg.match argreg
+                                # cursor.red().write(' match!')
+                                arglist.splice i, 0, '"'+arg+'"'
+                                # cursor.magenta().write(String(i)+': '+String(arglist)).write('\n')    
+                            # cursor.write('\n')
+                        cursor.magenta().write(String(arglist)).write('\n')    
+                        lines[li] = lines[li].replace(m[3], arglist.join(', '))
+                        cursor.yellow().bold().write(lines[li]).write('\n').reset()
+                        if not options.quiet
+                            if options.verbose
+                                cursor.magenta().write('\n').write(lines[li])
+                            else
+                                cursor.magenta().write('.')
 
         if options.template
             regexp = new RegExp('(^[^#]*)(' + options.template + ')(.+)(' + options.template + ')(.*$)')
@@ -75,7 +119,13 @@ pepperFile = (grunt, options, f) ->
         cursor.write('\n').reset()
     lines.join('\n')
 
-#__________________________________________________________________________________________________________ grunt tasks
+###
+ 0000000   00000000   000   000  000   000  000000000
+000        000   000  000   000  0000  000     000   
+000  0000  0000000    000   000  000 0 000     000   
+000   000  000   000  000   000  000  0000     000   
+ 0000000   000   000   0000000   000   000     000   
+###
 
 module.exports = (grunt) ->
 
@@ -103,6 +153,19 @@ module.exports = (grunt) ->
                           #
                           #  the replacement function receives one additional argument:
                           #       an object with keys: file, line, method, type, args
+                  paprika: ['dbg']
+                          # names of functions that get paprikaed :-)
+                          #
+                          # same as pepper, but the original variable arguments get
+                          #                 prefixed by their names. eg.:
+                          #  
+                          # dbg foo, bar
+                          # 
+                          # gets replaced by
+                          #
+                          # dbg {...pepper...}, 'foo:', foo, 'bar:', bar
+                  paprikaPrefix:  '<span class="console-type">'
+                  paprikaPostfix: '</span>'
 
         for file in @files
 
@@ -156,7 +219,13 @@ module.exports = (grunt) ->
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
 
-#__________________________________________________________________________________________________________ ascii header
+###
+ 0000000    0000000   0000000  000  000
+000   000  000       000       000  000
+000000000  0000000   000       000  000
+000   000       000  000       000  000
+000   000  0000000    0000000  000  000
+###
 
 asciiLines = (s) ->
         cs = (chars[c.charCodeAt(0)-97].split('\n') for c in s when 97 <= c.charCodeAt(0) < 97+26)
@@ -207,7 +276,13 @@ asciiText = (grunt, options, f) ->
     if not options.dryrun
         grunt.file.write f, salted.join('\n')
                         
-#__________________________________________________________________________________________________________ ascii font
+###
+00000000   0000000   000   000  000000000
+000       000   000  0000  000     000   
+000000    000   000  000 0 000     000   
+000       000   000  000  0000     000   
+000        0000000   000   000     000   
+###
 
 chars = [ \
 """
