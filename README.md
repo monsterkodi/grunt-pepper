@@ -31,9 +31,6 @@ It can also replace special markers with values from a json file:
 @version = '1.2.3'
 ```
 
-I am pretty new to the coffee-script and grunt world,
-so please use at your own risk!
-
 ## Installation
 
 ```shell
@@ -76,7 +73,7 @@ module.exports = (grunt) ->
         
                 # names of functions that get paprikaed :-)
                 #
-                # same as pepper, but the variable arguments get
+                # same as pepper, but variable arguments get
                 #                 prefixed with their names:
                 #  
                 # dbg foo, bar
@@ -144,7 +141,8 @@ I think these headers give me a nicer looking minimap:
             files:
                 'asciiHeader': ['./coffee/**/*.coffee']
                 
-        # 'asciiText' mode replaces text with ascii art text anywhere in the files:
+        # 'asciiText' mode replaces special comments with ascii art text 
+        #                  anywhere in the specified files:
 
         coffee: 
             textMarker  : "#!!" #   text following this comment will be transformed
@@ -155,6 +153,7 @@ I think these headers give me a nicer looking minimap:
                 'asciiText': ['./coffee/**/*.coffee']
 
         # this is what I use to generate text in my stylus files:
+        
         style:
             options:
             textMarker  : "//!!" #   text following this comment will be transformed
@@ -166,7 +165,7 @@ I think these headers give me a nicer looking minimap:
 ```
 
 This stuff works for me, but I won't guarantee that it works for you as well. 
-Therefore: don't forget to backup your files before you try it out!
+Therefore: don't forget to backup your files before you try it out! use at your own risk!
 
 [npm](https://www.npmjs.com/package/grunt-pepper)
 [grunt](http://gruntjs.com/)
