@@ -1,6 +1,6 @@
 # grunt-pepper
 
-... is a little tool that parses my coffee-script files before they get translated to javascript.
+... a little tool that parses my coffee-script files before they get translated to javascript.
 
 It replaces log function calls with alternative calls that receive an info object as its first argument.
 
@@ -57,7 +57,9 @@ module.exports = (grunt) ->
         template: '::'       # replaces ::file.json:key:: with value of
                              # property key from object in file.json
                              # set to false to disable templating
+                             
         pepper: ['console.log']
+        
                 # function calls that get peppered
                 #
                 # if specified as a map:
@@ -69,6 +71,23 @@ module.exports = (grunt) ->
                 #
                 #  the replacement function receives one additional 1st argument:
                 #       an object with keys: file, line, method, type, args
+                
+        paprika: ['dbg']
+        
+                # names of functions that get paprikaed :-)
+                #
+                # same as pepper, but the variable arguments get
+                #                 prefixed with their names:
+                #  
+                # dbg foo, bar
+                # 
+                # gets replaced with
+                #
+                # dbg {...pepper...}, 'foo:', foo, 'bar:', bar
+
+        paprikaPrefix:  ''
+        paprikaPostfix: ':'
+                
     task:
       files:
         'spiced': [ file(s) ] # will parse all file(s) and write the result
@@ -125,14 +144,23 @@ I think these headers give me a nicer looking minimap:
             files:
                 'asciiHeader': ['./coffee/**/*.coffee']
                 
-        # 'asciiText' mode replaces text with ascii art text anywhere in the files
-        #             this is what I use to generate text in my stylus files:
+        # 'asciiText' mode replaces text with ascii art text anywhere in the files:
+
+        coffee: 
+            textMarker  : "#!!" #   text following this comment will be transformed
+            textPrefix  : "###" #   this is put before the replacing lines
+            textFill    : ""    #   each replacing line starts with these characters
+            textPostfix : "###" #   this is put after the replacing lines
+            files:
+                'asciiText': ['./coffee/**/*.coffee']
+
+        # this is what I use to generate text in my stylus files:
         style:
             options:
-            textMarker  : "//!!" #   text following this one will be transformed
-            textPrefix  : "/*"   #   this is put before the replacing lines
-            textFill    : "* "   #   each replacing line starts with these characters
-            textPostfix : "*/"   #   this is put after the replacing lines
+            textMarker  : "//!!" #   text following this comment will be transformed
+            textPrefix  : "/*"
+            textFill    : "* "  
+            textPostfix : "*/"  
             files:
                 'asciiText': ['./style/*.styl']
 ```

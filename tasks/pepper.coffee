@@ -53,9 +53,17 @@ pepperFile = (grunt, options, f) ->
                 info.args = ( a.trim() for a in m[3].slice(1,-1).split(',') ) if m[3]
                 info.method = m[2]
                 info.type = m[1] or '.'
-                if options.verbose
+                if options.debug
                     cursor.hex(info.type == '@' and '#333333' or '#777777')
                     cursor.write('\n             '+info.type+' '+info.method+' '+info.args)
+
+            ###
+            00000000   00000000  00000000   00000000   00000000  00000000 
+            000   000  000       000   000  000   000  000       000   000
+            00000000   0000000   00000000   00000000   0000000   0000000  
+            000        000       000        000        000       000   000
+            000        00000000  000        000        00000000  000   000
+            ###
 
             if options.pepper
                 if Array.isArray(options.pepper)
@@ -66,12 +74,20 @@ pepperFile = (grunt, options, f) ->
                 for key of map
                     regexp = new RegExp('(^[^#]*\\s)(' + key + ')(\\s.*$)')
                     if m = line.match(regexp)
+                        if options.verbose
+                            cursor.white().bold().write('\n').write(lines[li]).reset()                        
                         lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
-                        if not options.quiet
-                            if options.verbose
-                                cursor.blue().write('\n').write(lines[li])
-                            else
-                                cursor.blue().write('.')
+                        if options.verbose
+                            cursor.blue().write('\n').write(lines[li])
+                        cursor.blue().write('.')
+
+            ###
+            00000000    0000000   00000000   00000000   000  000   000   0000000 
+            000   000  000   000  000   000  000   000  000  000  000   000   000
+            00000000   000000000  00000000   0000000    000  0000000    000000000
+            000        000   000  000        000   000  000  000  000   000   000
+            000        000   000  000        000   000  000  000   000  000   000
+            ###
 
             if options.paprika
                 if Array.isArray(options.paprika)
@@ -82,26 +98,28 @@ pepperFile = (grunt, options, f) ->
                 for key of map
                     regexp = new RegExp('(^[^#]*\\s)(' + key + ')(\\s.*$)')
                     if m = line.match(regexp)
+                        if options.verbose
+                            cursor.white().bold().write('\n').write(lines[li]).reset()
                         lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
                         arglist = (_.trim(a) for a in m[3].split(','))
-                        cursor.green().write(String(arglist)).write('\n')
-                        argreg = new RegExp('[\w\.]*')
+                        argreg = new RegExp('^[^\\{\\[\\\'\\\"\\d]*$')
                         for i in [arglist.length-1..0]
                             arg = arglist[i]
-                            # cursor.green().write('arg: "'+String(arg)+'"')
                             if arg.match argreg
-                                # cursor.red().write(' match!')
-                                arglist.splice i, 0, '"'+arg+'"'
-                                # cursor.magenta().write(String(i)+': '+String(arglist)).write('\n')    
-                            # cursor.write('\n')
-                        cursor.magenta().write(String(arglist)).write('\n')    
+                                arglist.splice i, 0, '"' + options.paprikaPrefix + arg + options.paprikaPostfix + '"'
                         lines[li] = lines[li].replace(m[3], arglist.join(', '))
-                        cursor.yellow().bold().write(lines[li]).write('\n').reset()
-                        if not options.quiet
-                            if options.verbose
-                                cursor.magenta().write('\n').write(lines[li])
-                            else
-                                cursor.magenta().write('.')
+
+                        if options.verbose
+                            cursor.magenta().write('\n').write(lines[li])
+                        cursor.magenta().write('.')
+
+        ###
+        000000000  00000000  00     00  00000000   000       0000000   000000000  00000000
+           000     000       000   000  000   000  000      000   000     000     000     
+           000     0000000   000000000  00000000   000      000000000     000     0000000 
+           000     000       000 0 000  000        000      000   000     000     000     
+           000     00000000  000   000  000        0000000  000   000     000     00000000
+        ###
 
         if options.template
             regexp = new RegExp('(^[^#]*)(' + options.template + ')(.+)(' + options.template + ')(.*$)')
@@ -112,8 +130,7 @@ pepperFile = (grunt, options, f) ->
                 jsonObj = JSON.parse(json)
                 if jsonObj?[key]?
                     lines[li] = line.replace regexp, "$1"+jsonObj[key]+"$5"
-                    if not options.quiet
-                        cursor.blue().write(':')
+                    cursor.blue().write(':')
 
     if not options.quiet
         cursor.write('\n').reset()
@@ -164,17 +181,22 @@ module.exports = (grunt) ->
                           # gets replaced by
                           #
                           # dbg {...pepper...}, 'foo:', foo, 'bar:', bar
-                  paprikaPrefix:  '<span class="console-type">'
-                  paprikaPostfix: '</span>'
+                  paprikaPrefix:  ''
+                  paprikaPostfix: ':'
 
         for file in @files
 
             cursor.yellow().bold()
-                  .write(file.dest).write('\n')
+                  .write(file.dest)
+                  .write(' ')
                   .reset()
+                  
+            cursor.write('\n') if not options.quiet
 
             files = (f for f in file.src when grunt.file.exists(f))
             peppered = ( pepperFile(grunt, options, f) for f in files ).join('\n')
+
+            cursor.write('\n')
 
             if options.print
                 cursor.reset()
@@ -203,7 +225,7 @@ module.exports = (grunt) ->
                                       #
                   textMarker  : "#!!" #   text following this one will be transformed
                   textPrefix  : "###" #   this is put before the replacing lines
-                  textFill    : ""    #   each replacing line starts with these charaters
+                  textFill    : ""    #   each replacing line starts with these characters
                   textPostfix : "###" #   this is put after the replacing lines
                   dryrun      : false # if true: no files are written,
                   verbose     : false # if true: more information is printed to stdout
@@ -220,11 +242,11 @@ module.exports = (grunt) ->
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
 
 ###
- 0000000    0000000   0000000  000  000
-000   000  000       000       000  000
-000000000  0000000   000       000  000
-000   000       000  000       000  000
-000   000  0000000    0000000  000  000
+ 0000000   0000000   000      000000000
+000       000   000  000         000   
+0000000   000000000  000         000   
+     000  000   000  000         000   
+0000000   000   000  0000000     000   
 ###
 
 asciiLines = (s) ->
