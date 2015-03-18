@@ -40,4 +40,5 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'build',     [ 'salt' ]
     grunt.registerTask 'default',   [ 'build' ]
-    grunt.registerTask 'publish',   [ 'bumpup', 'shell:commit', 'shell:push', 'shell:publish', 'open:npm' ]
+    grunt.registerTask 'push',      [ 'shell:commit', 'shell:push' ]
+    grunt.registerTask 'publish',   [ 'bumpup', 'push', 'shell:publish', 'open:npm' ]
