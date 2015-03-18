@@ -22,6 +22,9 @@ module.exports = (grunt) ->
           scripts:
             files: ['tasks/*.coffee']
             tasks: ['build']
+
+        bumpup:
+            file: 'package.json'
         
         shell:
             commit:

@@ -1,7 +1,7 @@
 {
   "name": "grunt-pepper",
   "description": "coffee-script tool: adds information objects to log calls, inserts data from json files and generates ascii-art headers.",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "homepage": "https://github.com/monsterkodi/grunt-pepper",
   "author": {
     "name": "monsterkodi",
