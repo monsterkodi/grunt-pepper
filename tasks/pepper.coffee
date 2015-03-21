@@ -250,6 +250,7 @@ module.exports = (grunt) ->
 ###
 
 asciiLines = (s) ->
+        s = s.toLowerCase()
         cs = (chars[c.charCodeAt(0)-97].split('\n') for c in s when 97 <= c.charCodeAt(0) < 97+26)
         zs = _.zip.apply(null, cs)
         _.map(zs, (j) -> j.join('  '))

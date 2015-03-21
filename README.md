@@ -101,14 +101,16 @@ In addition to the pepper task, there is another task which is called *salt*.
 
 It can add an ascii header to files which start with an empty block comment.
 
-For example, in a file *salt.coffee* it would ...
+For example, in a file *salt.coffee* it would replace ...
 
 ```coffee
 ###
 ###
+```
 
-# ... replace the above comment lines with the following header:
+...  with the following header:
 
+```coffee
 ###
 
  0000000   0000000   000      000000000
