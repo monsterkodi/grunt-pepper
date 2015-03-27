@@ -275,7 +275,8 @@ asciiHeader = (grunt, options, f) ->
                         cursor.hex('#ff0000').write(ascii).write('\n')
                     salted = _.flatten([lines[0], ascii, lines.splice(li)]).join('\n')
                     if not options.dryrun
-                        grunt.file.write f, salted
+                        if s != salted
+                            grunt.file.write f, salted
     
 asciiText = (grunt, options, f) ->
     
@@ -297,7 +298,9 @@ asciiText = (grunt, options, f) ->
         else
             salted.push lines[li]
     if not options.dryrun
-        grunt.file.write f, salted.join('\n')
+        new_s = salted.join('\n')
+        if new_s != s
+            grunt.file.write f, new_s
                         
 ###
 00000000   0000000   000   000  000000000

@@ -28,7 +28,7 @@ module.exports = (grunt) ->
         
         shell:
             commit:
-                command: 'git add . && git commit -m "lowercase"'
+                command: 'git add . && git commit -m "less salty"'
             push:
                 command: 'git push'
             publish:
