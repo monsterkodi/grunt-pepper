@@ -241,6 +241,56 @@ module.exports = (grunt) ->
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
 
+    #_____________________________________________________________________________________
+            
+    ###
+     0000000  000   000   0000000    0000000   00000000 
+    000       000   000  000        000   000  000   000
+    0000000   000   000  000  0000  000000000  0000000  
+         000  000   000  000   000  000   000  000   000
+    0000000    0000000    0000000   000   000  000   000
+    ###
+            
+    grunt.registerMultiTask 'sugar', 'puts sugar to my coffee', () ->
+        
+        options = @options
+                  dryrun:   false         # if true, no files are written,
+                  template: '::'          # replaces ::file.json:key:: with value of
+                                          #       property key from object in file.json
+                
+        for file in @files
+            files = (f for f in file.src when grunt.file.exists(f))
+            for f in files
+                
+                cursor.green()
+                      .write(file.dest)
+                      .write(' ')
+                      .reset()
+
+                s = grunt.file.read f
+                lines = s.split '\n'
+                found = false
+                
+                for li in [0...lines.length]
+                    line = lines[li]
+
+                    if options.template
+                        regexp = new RegExp('(^[^#]*)(' + options.template + ')(.+)(' + options.template + ')(.*$)')
+                        if m = line.match(regexp)
+                            [jsonFile, key] = m[3].split ':'
+                            json = fs.readFileSync jsonFile,
+                                      encoding: 'utf8'
+                            jsonObj = JSON.parse(json)
+                            if jsonObj?[key]?
+                                found = true
+                                lines[li] = line.replace regexp, "$1"+jsonObj[key]+"$5"
+                                
+                if found
+                    if options.dryrun
+                        cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
+                    else
+                        grunt.file.write file.dest, lines.join('\n')
+
 ###
  0000000   0000000   000      000000000
 000       000   000  000         000   

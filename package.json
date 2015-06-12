@@ -8,6 +8,7 @@
     "email": "monsterkodi@gmx.net",
     "url": "http://monsterkodi.net"
   },
+  "license": "Public Domain",
   "repository": {
     "type": "git",
     "url": "https://github.com/monsterkodi/grunt-pepper.git"
