@@ -153,6 +153,7 @@ module.exports = (grunt) ->
                   verbose:  false         # if true, the matches are printed to stdout
                   print:    false         # if true, the parse result is printed to stdout
                   quiet:    false         # if true, almost no information is printed
+                  join:     true          # if true, source files are joined into one target file
                   outdir:   '.pepper'     # directory where the parse results are written to
                   type:     '.coffee'     # suffix of the parse result files
                   template: '::'          # replaces ::file.json:key:: with value of
@@ -194,17 +195,25 @@ module.exports = (grunt) ->
             cursor.write('\n') if not options.quiet
 
             files = (f for f in file.src when grunt.file.exists(f))
-            peppered = ( pepperFile(grunt, options, f) for f in files ).join('\n')
+            
+            if options.join
+                peppered = ( pepperFile(grunt, options, f) for f in files ).join('\n')
 
-            cursor.write('\n')
+                cursor.write('\n')
 
-            if options.print
-                cursor.reset()
-                cursor.write(peppered).write('\n')
+                if options.print
+                    cursor.reset()
+                    cursor.write(peppered).write('\n')
 
-            if not options.dryrun
-                target = options.outdir + '/' + file.dest + options.type
-                grunt.file.write target, peppered
+                if not options.dryrun
+                    target = options.outdir + '/' + file.dest + options.type
+                    grunt.file.write target, peppered
+            else
+                for f in files
+                    peppered = pepperFile(grunt, options, f)
+                    if not options.dryrun
+                        target = options.outdir + '/' + f
+                        grunt.file.write target, peppered
 
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
