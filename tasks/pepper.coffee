@@ -45,7 +45,7 @@ pepperFile = (grunt, options, f) ->
             regexp = /(^\s*class\s+)(\w+)(\s?.*$)/
             if m = line.match(regexp)
                 info.class = m[2]
-                if not options.quiet
+                if options.verbose
                     cursor.green()
                     cursor.write('\n        '+info.class+' ')
 
@@ -77,9 +77,9 @@ pepperFile = (grunt, options, f) ->
                         if options.verbose
                             cursor.white().bold().write('\n').write(lines[li]).reset()                        
                         lines[li] = line.replace regexp, "$1" + map[key] + " " + JSON.stringify(info) + ", $3"
-                        if options.verbose
+                        if options.debug
                             cursor.blue().write('\n').write(lines[li])
-                        cursor.blue().write('.')
+                        cursor.blue().write('.') if not options.quiet
 
             ###
             00000000    0000000   00000000   00000000   000  000   000   0000000 
@@ -111,7 +111,7 @@ pepperFile = (grunt, options, f) ->
 
                         if options.verbose
                             cursor.magenta().write('\n').write(lines[li])
-                        cursor.magenta().write('.')
+                        cursor.magenta().write('.') if not options.quiet
 
         ###
         000000000  00000000  00     00  00000000   000       0000000   000000000  00000000
@@ -130,10 +130,11 @@ pepperFile = (grunt, options, f) ->
                 jsonObj = JSON.parse(json)
                 if jsonObj?[key]?
                     lines[li] = line.replace regexp, "$1"+jsonObj[key]+"$5"
-                    cursor.blue().write(':')
+                    cursor.blue().write(':') if not options.quiet
 
     if not options.quiet
-        cursor.write('\n').reset()
+        cursor.write('\n')
+        cursor.reset()
     lines.join('\n')
 
 ###
@@ -156,6 +157,7 @@ module.exports = (grunt) ->
                   join:     true          # if true, source files are joined into one target file
                   outdir:   '.pepper'     # directory where the parse results are written to
                   type:     '.coffee'     # suffix of the parse result files
+                  join:     true          # if true, files will be joined into a single file
                   template: '::'          # replaces ::file.json:key:: with value of
                                           #       property key from object in file.json
                                           # set to false to disable templating
@@ -187,10 +189,12 @@ module.exports = (grunt) ->
 
         for file in @files
 
-            cursor.yellow().bold()
-                  .write(file.dest)
-                  .write(' ')
-                  .reset()
+            cursor.green().write('>> ' )
+            if not options.quiet
+                cursor.yellow().bold()
+                      .write(file.dest)
+                      .write(' ')
+                      .reset()
                   
             cursor.write('\n') if not options.quiet
 
@@ -199,7 +203,7 @@ module.exports = (grunt) ->
             if options.join
                 peppered = ( pepperFile(grunt, options, f) for f in files ).join('\n')
 
-                cursor.write('\n')
+                # cursor.write('\n') if not options.quiet
 
                 if options.print
                     cursor.reset()
@@ -211,9 +215,13 @@ module.exports = (grunt) ->
             else
                 for f in files
                     peppered = pepperFile(grunt, options, f)
+                    # cursor.write('\n') if not options.quiet
                     if not options.dryrun
                         target = options.outdir + '/' + f
-                        grunt.file.write target, peppered
+                        grunt.file.write target, peppered                    
+                        
+            if options.quiet
+                cursor.reset().write(' ' + files.length + ' files peppered.\n')
 
         if options.dryrun
             cursor.red().write('\n !!!!!!!!!!!! this was a dry run !!!!!!!!!!!!\n')
