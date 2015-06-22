@@ -157,7 +157,6 @@ module.exports = (grunt) ->
                   join:     true          # if true, source files are joined into one target file
                   outdir:   '.pepper'     # directory where the parse results are written to
                   type:     '.coffee'     # suffix of the parse result files
-                  join:     true          # if true, files will be joined into a single file
                   template: '::'          # replaces ::file.json:key:: with value of
                                           #       property key from object in file.json
                                           # set to false to disable templating
