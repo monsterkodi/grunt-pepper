@@ -49,6 +49,7 @@ module.exports = (grunt) ->
                              # just prints what would be done
         verbose:  false      # if true, the parse result is printed to stdout
         quiet:    false      # if true, almost no information is printed
+        join:     true       # if true, files are joined into one target file
         outdir:   '.pepper'  # directory where the parse results are written to
         type:     '.coffee'  # suffix of the parse result files
         template: '::'       # replaces ::file.json:key:: with value of
@@ -88,7 +89,9 @@ module.exports = (grunt) ->
     task:
       files:
         'spiced': [ file(s) ] # will parse all file(s) and write the result
-                              # to file '.pepper/spiced.coffee'
+                              # to file '.pepper/spiced.coffee' if join is true
+                              # if join is false, the original file structure 
+                              # will be replicated in outdir
 
   grunt.loadNpmTasks 'grunt-pepper'
 ```
