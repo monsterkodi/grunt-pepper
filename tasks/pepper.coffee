@@ -357,10 +357,10 @@ asciiText = (grunt, options, f) ->
             lns = asciiLines(lines[li].slice(m[1].length+options.textMarker.length))
             if options.verbose
                 cursor.hex('#ff0000').write(asciiJoin lns).write('\n')
-            salted.push m[1] + options.textPrefix
+            salted.push m[1] + options.textPrefix if options.textPrefix?
             for l in lns
-                salted.push m[1] + options.textFill + l
-            salted.push m[1] + options.textPostfix
+                salted.push m[1] + (options.textFill? and options.textFill or '') + l
+            salted.push m[1] + options.textPostfix if options.textPostfix?
         else
             salted.push lines[li]
     if not options.dryrun
