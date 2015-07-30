@@ -246,6 +246,7 @@ module.exports = (grunt) ->
                   dryrun      : false # if true: no files are written,
                   verbose     : false # if true: more information is printed to stdout
                   quiet       : false # if true: almost no information is printed
+                  character   : null 
 
         for file in @files
             for f in (f for f in file.src when grunt.file.exists(f))
@@ -315,11 +316,14 @@ module.exports = (grunt) ->
 0000000   000   000  0000000     000   
 ###
 
-asciiLines = (s) ->
+asciiLines = (s, options) ->
         s = s.toLowerCase()
         cs = (chars[c.charCodeAt(0)-97].split('\n') for c in s when 97 <= c.charCodeAt(0) < 97+26)
         zs = _.zip.apply(null, cs)
-        _.map(zs, (j) -> j.join('  '))
+        rs = _.map(zs, (j) -> j.join('  '))
+        if options.character? and options.character.length == 1
+            rs = _.map(rs, (l) -> l.replace(/0/g, options.character))
+        rs
     
 asciiJoin = (l) ->
     "\n"+l.join('\n')+"\n"
@@ -336,7 +340,7 @@ asciiHeader = (grunt, options, f) ->
                     if not options.quiet
                         cursor.hex('#444444').write('creating ascii header for file ' + String(f)).write('\n')
                     base = path.basename f, path.extname(f)
-                    ascii = asciiJoin asciiLines base
+                    ascii = asciiJoin asciiLines base, options
                     if options.verbose
                         cursor.hex('#ff0000').write(ascii).write('\n')
                     salted = _.flatten([lines[0], ascii, lines.splice(li)]).join('\n')
@@ -354,7 +358,7 @@ asciiText = (grunt, options, f) ->
         if m = lines[li].match(r)
             if not options.quiet
                 cursor.hex('#444444').write('creating ascii text in line ' + String(li) + ' in file ' + String(f)).write('\n')
-            lns = asciiLines(lines[li].slice(m[1].length+options.textMarker.length))
+            lns = asciiLines(lines[li].slice(m[1].length+options.textMarker.length), options)
             if options.verbose
                 cursor.hex('#ff0000').write(asciiJoin lns).write('\n')
             salted.push m[1] + options.textPrefix if options.textPrefix?
